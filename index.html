@@ -1664,6 +1664,24 @@ function resetDetailWeights(){
 // Init
 renderApp();
 </script>
+<script type="module" src="./data-loader.js"></script>
+<script type="module">
+import {
+  loadScores,
+  loadWeights,
+  loadPresets
+} from "./data-loader.js";
+
+(async () => {
+  const scores = await loadScores();
+  const weights = await loadWeights();
+  const presets = await loadPresets();
+
+  console.log("Scores", scores);
+  console.log("Weights", weights);
+  console.log("Presets", presets);
+})();
+</script>
 </body>
 </html>
  
