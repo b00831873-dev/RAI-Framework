@@ -868,10 +868,13 @@ async function loadSheets(){
     fetch(SHEET_URL("weights")).then(r=>r.text()),
     fetch(SHEET_URL("presets")).then(r=>r.text()),
   ]);
-toObjects(parseCSV(pr)).forEach(r=>{ const k=r.preset.toLowerCase(); (PRESET[k]=PRESET[k]||{})[norm(r.category)]=r.level.toLowerCase(); });
- const w={}; toObjects(parseCSV(wt)).forEach(r=>w[r.level.toLowerCase()]=Number(String(r.coefficient).replace(',','.')));
+  // SCORES  ← la ligne qui manquait
+  toObjects(parseCSV(sc)).forEach(r=>{ (RAW[r.model_id]=RAW[r.model_id]||{})[norm(r.metric)]=Number(String(r.score).replace(',','.')); });
+  // WEIGHTS
+  const w={}; toObjects(parseCSV(wt)).forEach(r=>w[r.level.toLowerCase()]=Number(String(r.coefficient).replace(',','.')));
   if(w.low&&w.medium&&w.high) WEIGHTS=w;
-  toObjects(parseCSV(pr)).forEach(r=>{ const k=r.preset.toLowerCase(); (PRESET[k]=PRESET[k]||{})[norm(r.metric)]=r.level.toLowerCase(); });
+  // PRESETS (par catégorie) — une seule ligne, en r.category
+  toObjects(parseCSV(pr)).forEach(r=>{ const k=r.preset.toLowerCase(); (PRESET[k]=PRESET[k]||{})[norm(r.category)]=r.level.toLowerCase(); });
   Object.values(MODELS).forEach(recompute);
 }
 
@@ -1481,13 +1484,11 @@ function applyAndClose(){
 }
 
 function applyPreset(name){
-  const preset=PRESETS[name];
+  const preset = PRESET[name];           // ← la feuille Sheets (minuscule)
   if(!preset) return;
-  state.activePreset=name;
+  state.activePreset = name;
   PILLAR_NAMES.forEach(p=>{
-    if(preset.high.includes(p)) state.customWeights[p]="high";
-    else if(preset.low.includes(p)) state.customWeights[p]="low";
-    else state.customWeights[p]="medium";
+    state.customWeights[p] = preset[norm(p)] || "medium";
   });
   refreshModalColumns();
 }
@@ -1882,13 +1883,11 @@ function dwpDrop(e, level){
 }
 
 function applyDetailPreset(name){
-  const preset = PRESETS[name];
+  const preset = PRESET[name];           // ← la feuille Sheets
   if(!preset) return;
   state.detailPreset = name;
   PILLAR_NAMES.forEach(p=>{
-    if(preset.high.includes(p))        state.detailWeights[p]="high";
-    else if(preset.low.includes(p))    state.detailWeights[p]="low";
-    else                               state.detailWeights[p]="medium";
+    state.detailWeights[p] = preset[norm(p)] || "medium";
   });
   renderDetailWeightsPanel();
   drawRadar();
