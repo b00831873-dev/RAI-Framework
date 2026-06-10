@@ -739,6 +739,99 @@ const MODELS={
 const DIM_SHORT=["Bias","Fairness","Privacy","Transparency","Security","Autonomy","Human Ctrl","Environment"];
 
 /* ═══════════════════════════════════════════════
+  Ajout Claude 1
+   ═══════════════════════════════════════════════ */
+  /* ═══ DATA LAYER : Google Sheets ═══ */
+const SHEET_ID = "197NYkBiGpQPpYHHqvNY-XVIpkpZOqaBejIQua7X1lTw";
+const SHEET_URL = s => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${s}`;
+
+// Quelle métrique appartient à quel pilier (pour radar + custom weights)
+const PILLAR_METRICS = {
+  "Bias":["Bias Benchmark for QA (BBQ)","Tokenisation Premium"],
+  "Fairness & Equity performance":["Fairness Score","Disparate Impact"],
+  "Data privacy":["PII Extraction Rate"],
+  "Transparency & Explainability":["Faithfulness Score (Plausibility)","Counterfactual Faithfulness","Traceability Criteria"],
+  "Security & Technical Robustness":["GCG Attack Success Rate","Integrity (Digital Trust Radar)","Confidentiality (Digital Trust Radar)","Reliability (Digital Trust Radar)","HHEM Hallucination Rate"],
+  "Autonomy & Sovereignty":["Technical Autonomy (DTR)","Operational Autonomy (DTR)","Data Location & Certification (DTR)","Website Restriction Rate"],
+  "Human Control & Oversight":["Instruction Following Reliability (IFR)"],
+  "Environmental Impact":["CO2 per Functional Unit"],
+};
+
+let RAW = {};                                   // RAW[model_id][metric] = score brut
+let WEIGHTS = {low:1, medium:2, high:3};        // écrasé par la feuille weights
+let PRESET = {};                                // PRESET[hr|legal][metric] = level
+
+const norm = s => String(s).toLowerCase().replace(/[^a-z0-9]/g,'');
+const round1 = x => Math.round(x*10)/10;
+
+function rawScore(m, metricName){
+  const r = RAW[m.id]; if(!r) return null;
+  const v = r[norm(metricName)];
+  return v==null ? null : Number(v);
+}
+// Moyenne pondérée sur un set de métriques. levelOf(metric) -> "low|medium|high"
+function wmean(m, metricNames, levelOf){
+  let ws=0, tw=0;
+  metricNames.forEach(mt=>{
+    const s = rawScore(m, mt); if(s==null) return;
+    const w = WEIGHTS[levelOf(mt)] || WEIGHTS.medium;
+    ws += s*w; tw += w;
+  });
+  return tw ? ws/tw : 0;
+}
+const allMetrics = m => m.categories.flatMap(c=>c.subs.flatMap(s=>s.metrics));
+const dimMetrics = (m,dimId) => { const c=m.categories.find(c=>c.id===dimId); return c?c.subs.flatMap(s=>s.metrics):[]; };
+function levelForUseCase(uc){
+  if(uc==="legal"||uc==="hr"){ const p=PRESET[uc]||{}; return mt => p[norm(mt)] || "medium"; }
+  return () => "medium"; // 'all' = baseline neutre (moyenne simple)
+}
+
+// Écrase tous les scores du modèle à partir des métriques brutes
+function recompute(m){
+  const base = () => "medium";
+  m.categories.forEach(cat=>{
+    cat.subs.forEach(sub => sub.score = round1(wmean(m, sub.metrics, base)));
+    cat.score = round1(wmean(m, cat.subs.flatMap(s=>s.metrics), base));
+  });
+  m.rai.forEach(p => p.score = round1(wmean(m, PILLAR_METRICS[p.name]||[], base)));
+  ["all","legal","hr"].forEach(uc=>{
+    const lvl = levelForUseCase(uc);
+    m.scores.responsibility[uc] = round1(wmean(m, dimMetrics(m,"resp"), lvl));
+    m.scores.trust[uc]          = round1(wmean(m, dimMetrics(m,"trust"), lvl));
+    m.scores.performance[uc]    = round1(wmean(m, dimMetrics(m,"perf"), lvl));
+    m.scores.global[uc]         = round1(wmean(m, allMetrics(m), lvl));
+  });
+}
+
+// Parsing CSV
+function parseCSV(t){
+  const rows=[]; let row=[], cur="", q=false;
+  for(let i=0;i<t.length;i++){ const c=t[i];
+    if(q){ if(c==='"'){ if(t[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+    else { if(c==='"') q=true; else if(c===',') {row.push(cur);cur="";}
+           else if(c==='\n'){row.push(cur);rows.push(row);row=[];cur="";}
+           else if(c!=='\r') cur+=c; }
+  }
+  if(cur!==""||row.length){ row.push(cur); rows.push(row); }
+  return rows.filter(r=>r.some(x=>x!==""));
+}
+function toObjects(rows){ const h=rows[0].map(x=>x.trim()); return rows.slice(1).map(r=>Object.fromEntries(h.map((k,i)=>[k,(r[i]??"").trim()]))); }
+
+async function loadSheets(){
+  const [sc,wt,pr] = await Promise.all([
+    fetch(SHEET_URL("scores")).then(r=>r.text()),
+    fetch(SHEET_URL("weights")).then(r=>r.text()),
+    fetch(SHEET_URL("presets")).then(r=>r.text()),
+  ]);
+  toObjects(parseCSV(sc)).forEach(r=>{ (RAW[r.model_id]=RAW[r.model_id]||{})[norm(r.metric)]=Number(r.score); });
+  const w={}; toObjects(parseCSV(wt)).forEach(r=>w[r.level.toLowerCase()]=Number(r.coefficient));
+  if(w.low&&w.medium&&w.high) WEIGHTS=w;
+  toObjects(parseCSV(pr)).forEach(r=>{ const k=r.preset.toLowerCase(); (PRESET[k]=PRESET[k]||{})[norm(r.metric)]=r.level.toLowerCase(); });
+  Object.values(MODELS).forEach(recompute);
+}
+
+  
+/* ═══════════════════════════════════════════════
    STATE
    ═══════════════════════════════════════════════ */
 const PILLAR_NAMES=["Bias","Fairness & Equity performance","Data privacy","Transparency & Explainability","Security & Technical Robustness","Autonomy & Sovereignty","Human Control & Oversight","Environmental Impact"];
@@ -905,9 +998,11 @@ function setFilter(key,val){
    HOME — RANKING
    ═══════════════════════════════════════════════ */
 function getCustomScore(m){
-  let tw=0,ws=0;
-  m.rai.forEach(r=>{const w=WEIGHT_VALUES[state.customWeights[r.name]||"medium"]||2;tw+=w;ws+=r.score*w;});
-  return tw>0?Math.round((ws/tw)*10)/10:0;
+  const levelOf = mt => {
+    for(const p in PILLAR_METRICS){ if(PILLAR_METRICS[p].includes(mt)) return state.customWeights[p]||"medium"; }
+    return "medium";
+  };
+  return round1(wmean(m, allMetrics(m), levelOf));
 }
 function getRanked(){
   const {dimension,useCase,sort}=state.filters;
@@ -1763,8 +1858,12 @@ function resetDetailWeights(){
   drawRadar();
 }
 
-// Init
-renderApp();
+// Init : on charge les Sheets PUIS on affiche (fallback = chiffres placeholder)
+(async () => {
+  try { await loadSheets(); }
+  catch(e){ console.error("Chargement Sheets échoué, placeholders utilisés", e); }
+  renderApp();
+})();
 </script>
 </body>
 </html>
