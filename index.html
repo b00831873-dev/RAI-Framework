@@ -781,25 +781,70 @@ function wmean(m, metricNames, levelOf){
 }
 const allMetrics = m => m.categories.flatMap(c=>c.subs.flatMap(s=>s.metrics));
 const dimMetrics = (m,dimId) => { const c=m.categories.find(c=>c.id===dimId); return c?c.subs.flatMap(s=>s.metrics):[]; };
-function levelForUseCase(uc){
-  if(uc==="legal"||uc==="hr"){ const p=PRESET[uc]||{}; return mt => p[norm(mt)] || "medium"; }
-  return () => "medium"; // 'all' = baseline neutre (moyenne simple)
+
+// MODIFICATION PONDERATION  
+// Modification pour la pondération avec Claude : ex fonctionlevelForUseCase
+  
+// Score d'une catégorie = moyenne SIMPLE de ses métriques (pas de pondération interne)
+function pillarScore(m, pillar){
+  return wmean(m, PILLAR_METRICS[pillar]||[], ()=> "medium");
+}
+// Score global = moyenne des 8 catégories, pondérée par leur criticité (normalisée auto)
+function weightedGlobal(m, levelOfPillar){
+  let ws=0, tw=0;
+  for(const p in PILLAR_METRICS){
+    const sc = pillarScore(m, p); if(!sc) continue;
+    const w = WEIGHTS[levelOfPillar(p)] || WEIGHTS.medium;
+    ws += sc*w; tw += w;
+  }
+  return tw ? ws/tw : 0;
+}
+
+// Métrique -> sa catégorie (inversion de PILLAR_METRICS)
+const METRIC_PILLAR = {};
+for(const p in PILLAR_METRICS) PILLAR_METRICS[p].forEach(mt => METRIC_PILLAR[norm(mt)] = p);
+
+// Score d'une dimension : on regroupe ses métriques par catégorie,
+// on moyenne chaque catégorie, puis on pondère les catégories.
+function weightedDimension(m, dimId, levelOfPillar){
+  const byPillar = {};
+  dimMetrics(m, dimId).forEach(mt=>{
+    const p = METRIC_PILLAR[norm(mt)]; if(!p) return;
+    (byPillar[p] = byPillar[p] || []).push(mt);
+  });
+  let ws=0, tw=0;
+  for(const p in byPillar){
+    const sc = wmean(m, byPillar[p], ()=> "medium"); // moyenne simple intra-catégorie
+    if(!sc) continue;
+    const w = WEIGHTS[levelOfPillar(p)] || WEIGHTS.medium;
+    ws += sc*w; tw += w;
+  }
+  return tw ? ws/tw : 0;
+}
+  
+// Niveau de chaque catégorie selon le use case (preset)
+function pillarLevelForUseCase(uc){
+  if(uc==="legal" || uc==="hr"){ const p = PRESET[uc]||{}; return name => p[norm(name)] || "medium"; }
+  return () => "medium"; // 'all' = tout medium => moyenne simple des catégories
 }
 
 // Écrase tous les scores du modèle à partir des métriques brutes
 function recompute(m){
   const base = () => "medium";
+  // sous-catégories + 3 dimensions = moyennes simples (non pondérées)
   m.categories.forEach(cat=>{
     cat.subs.forEach(sub => sub.score = round1(wmean(m, sub.metrics, base)));
     cat.score = round1(wmean(m, cat.subs.flatMap(s=>s.metrics), base));
   });
-  m.rai.forEach(p => p.score = round1(wmean(m, PILLAR_METRICS[p.name]||[], base)));
+  // les 8 catégories du radar = moyenne simple de leurs métriques
+  m.rai.forEach(p => p.score = round1(pillarScore(m, p.name)));
+  // global pondéré par catégorie, par use case
   ["all","legal","hr"].forEach(uc=>{
-    const lvl = levelForUseCase(uc);
-    m.scores.responsibility[uc] = round1(wmean(m, dimMetrics(m,"resp"), lvl));
-    m.scores.trust[uc]          = round1(wmean(m, dimMetrics(m,"trust"), lvl));
-    m.scores.performance[uc]    = round1(wmean(m, dimMetrics(m,"perf"), lvl));
-    m.scores.global[uc]         = round1(wmean(m, allMetrics(m), lvl));
+    const lvl = pillarLevelForUseCase(uc);
+    m.scores.global[uc]         = round1(weightedGlobal(m, lvl));
+    m.scores.responsibility[uc] = round1(weightedDimension(m, "resp", lvl));
+    m.scores.trust[uc]          = round1(weightedDimension(m, "trust", lvl));
+    m.scores.performance[uc]    = round1(weightedDimension(m, "perf", lvl));
   });
 }
 
@@ -823,7 +868,7 @@ async function loadSheets(){
     fetch(SHEET_URL("weights")).then(r=>r.text()),
     fetch(SHEET_URL("presets")).then(r=>r.text()),
   ]);
- toObjects(parseCSV(sc)).forEach(r=>{ (RAW[r.model_id]=RAW[r.model_id]||{})[norm(r.metric)]=Number(String(r.score).replace(',','.')); });
+toObjects(parseCSV(pr)).forEach(r=>{ const k=r.preset.toLowerCase(); (PRESET[k]=PRESET[k]||{})[norm(r.category)]=r.level.toLowerCase(); });
  const w={}; toObjects(parseCSV(wt)).forEach(r=>w[r.level.toLowerCase()]=Number(String(r.coefficient).replace(',','.')));
   if(w.low&&w.medium&&w.high) WEIGHTS=w;
   toObjects(parseCSV(pr)).forEach(r=>{ const k=r.preset.toLowerCase(); (PRESET[k]=PRESET[k]||{})[norm(r.metric)]=r.level.toLowerCase(); });
@@ -998,12 +1043,10 @@ function setFilter(key,val){
    HOME — RANKING
    ═══════════════════════════════════════════════ */
 function getCustomScore(m){
-  const levelOf = mt => {
-    for(const p in PILLAR_METRICS){ if(PILLAR_METRICS[p].includes(mt)) return state.customWeights[p]||"medium"; }
-    return "medium";
-  };
-  return round1(wmean(m, allMetrics(m), levelOf));
+  const levelOf = name => state.customWeights[name] || "medium";
+  return round1(weightedGlobal(m, levelOf));
 }
+  
 function getRanked(){
   const {dimension,useCase,sort}=state.filters;
   const arr=Object.values(MODELS).map(m=>({
