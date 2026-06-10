@@ -767,7 +767,7 @@ const round1 = x => Math.round(x*10)/10;
 function rawScore(m, metricName){
   const r = RAW[m.id]; if(!r) return null;
   const v = r[norm(metricName)];
-  return v==null ? null : Number(v);
+  return (v==null || Number.isNaN(v)) ? null : Number(v);
 }
 // Moyenne pondérée sur un set de métriques. levelOf(metric) -> "low|medium|high"
 function wmean(m, metricNames, levelOf){
@@ -823,8 +823,8 @@ async function loadSheets(){
     fetch(SHEET_URL("weights")).then(r=>r.text()),
     fetch(SHEET_URL("presets")).then(r=>r.text()),
   ]);
-  toObjects(parseCSV(sc)).forEach(r=>{ (RAW[r.model_id]=RAW[r.model_id]||{})[norm(r.metric)]=Number(r.score); });
-  const w={}; toObjects(parseCSV(wt)).forEach(r=>w[r.level.toLowerCase()]=Number(r.coefficient));
+ toObjects(parseCSV(sc)).forEach(r=>{ (RAW[r.model_id]=RAW[r.model_id]||{})[norm(r.metric)]=Number(String(r.score).replace(',','.')); });
+ const w={}; toObjects(parseCSV(wt)).forEach(r=>w[r.level.toLowerCase()]=Number(String(r.coefficient).replace(',','.')));
   if(w.low&&w.medium&&w.high) WEIGHTS=w;
   toObjects(parseCSV(pr)).forEach(r=>{ const k=r.preset.toLowerCase(); (PRESET[k]=PRESET[k]||{})[norm(r.metric)]=r.level.toLowerCase(); });
   Object.values(MODELS).forEach(recompute);
