@@ -1956,62 +1956,132 @@ function closeMetric(){
 function aboutOverviewHTML(){
   return `
       <div class="about-section">
-        <p class="about-section-label">Overview</p>
-        <p class="about-section-title">What this platform is</p>
-        <p class="about-section-body">[ Placeholder &mdash; à compléter. ] The LLM Benchmark &amp; Evaluation Interface is a decision-support tool that lets organizations compare Large Language Models on dimensions that go beyond raw accuracy: responsibility, trust and operational performance. This Overview gives a high-level summary; the <em>How It Works</em> tab details the methodology, and the <em>Metrics</em> tab documents every indicator individually.</p>
+        <p class="about-section-label">01 — Context</p>
+        <p class="about-section-title">Orange Business and the responsible-AI opportunity</p>
+        <p class="about-section-body">Orange Business is the enterprise (B2B) arm of the Orange Group: a global integrator of secure connectivity, cloud, cybersecurity and data &amp; AI, operating in more than 65 countries with over 30,000 employees and €8&nbsp;billion in revenue. As the generative-AI market races toward an estimated $1&nbsp;trillion by 2030 — a landscape dominated by US and Chinese players — Orange Business does not compete on building frontier models. It differentiates by integrating AI into complex enterprise environments with a focus on security and sovereignty, with the ambition of becoming the trusted European leader in responsible, compliant AI.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1rem">
+          <div style="flex:1;min-width:110px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.875rem 1rem">
+            <p style="font-size:22px;font-weight:800;color:var(--ob);letter-spacing:-.02em">65+</p>
+            <p style="font-size:10px;color:var(--muted);font-weight:600;margin-top:2px">countries</p>
+          </div>
+          <div style="flex:1;min-width:110px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.875rem 1rem">
+            <p style="font-size:22px;font-weight:800;color:var(--ob);letter-spacing:-.02em">30,000+</p>
+            <p style="font-size:10px;color:var(--muted);font-weight:600;margin-top:2px">employees</p>
+          </div>
+          <div style="flex:1;min-width:110px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.875rem 1rem">
+            <p style="font-size:22px;font-weight:800;color:var(--ob);letter-spacing:-.02em">€8B</p>
+            <p style="font-size:10px;color:var(--muted);font-weight:600;margin-top:2px">annual revenue</p>
+          </div>
+        </div>
       </div>
 
       <div class="about-divider"></div>
 
       <div class="about-section">
-        <p class="about-section-label">Overview</p>
-        <p class="about-section-title">Who it is for</p>
-        <p class="about-section-body">[ Placeholder &mdash; à compléter. ] Risk, compliance and procurement teams who need an auditable basis for selecting or approving an LLM, as well as technical teams who want a consolidated view of a model&rsquo;s strengths and weaknesses against ISO/IEC 42001 and the EU AI Act.</p>
+        <p class="about-section-label">02 — Why now</p>
+        <p class="about-section-title">From AI performance to AI you can trust</p>
+        <p class="about-section-body">The market is entering a phase of rapid institutionalisation. The EU AI Act — the first comprehensive AI regulation — and ISO/IEC 42001 — the first certifiable AI management standard — are setting new benchmarks. Enterprises no longer buy on raw capability alone; they expect risk management, traceability and ethical alignment from design to deployment. For Orange Business, this turns regulatory constraint into a strategic advantage: compliance becomes a market segment in its own right, and trust becomes the primary lever for growth in a market dominated by non-European players.</p>
+        <div class="about-pill-row">
+          <span class="about-pill hi">EU AI Act</span>
+          <span class="about-pill hi">ISO/IEC 42001</span>
+          <span class="about-pill">Security</span>
+          <span class="about-pill">Sovereignty</span>
+          <span class="about-pill">Traceability</span>
+        </div>
       </div>
 
       <div class="about-divider"></div>
 
       <div class="about-section">
-        <p class="about-section-label">Overview</p>
-        <p class="about-section-title">How to read this documentation</p>
-        <p class="about-section-body">[ Placeholder &mdash; à compléter. ] Start here for context, switch to <em>How It Works</em> for the full framework and scoring methodology, then open any metric in the <em>Metrics</em> tab to see its executive summary.</p>
-        <div class="about-placeholder">Overview content &mdash; <em>to be written</em></div>
+        <p class="about-section-label">03 — The problem</p>
+        <p class="about-section-title">Operationalising ethics</p>
+        <p class="about-section-body">High-level Responsible-AI principles are well understood; turning them into measurable, technical, model-agnostic indicators is not. Orange Business lacked an agnostic, operational framework to systematically assess, score and monitor the compliance of its Large Language Model offerings against emerging standards. The need is to prove that AI solutions are compliant by design — consistently, across different models and client environments — rather than relying on aspirational statements. This platform is the response: it makes Responsible AI a technical reality that can be measured and demonstrated.</p>
+      </div>
+
+      <div class="about-divider"></div>
+
+      <div class="about-section">
+        <p class="about-section-label">04 — Objectives</p>
+        <p class="about-section-title">What the platform delivers</p>
+        <p class="about-section-body">The project translates regulatory and standardisation requirements into operational practice through three complementary outcomes.</p>
+        <div class="about-grid" style="margin-top:.75rem">
+          <div class="about-card">
+            <p class="about-card-title" style="color:#FF6600">A KPI framework</p>
+            <p class="about-card-body">The requirements of the EU AI Act and ISO/IEC 42001 structured into 19 model-agnostic evaluation metrics — a reference layer stating what must be demonstrated, why it matters, and how it is evidenced.</p>
+          </div>
+          <div class="about-card">
+            <p class="about-card-title" style="color:#FF6600">A scoring system</p>
+            <p class="about-card-body">A measurable scoring and monitoring dashboard that assesses each LLM on ethics and safety, with auditable outputs — metric breakdowns and traceable evidence — shareable across technical, risk and business teams.</p>
+          </div>
+          <div class="about-card" style="grid-column:span 2">
+            <p class="about-card-title" style="color:#FF6600">A customisable tool</p>
+            <p class="about-card-body">An assessment tool that supports client-level customisation and scales across Orange Business&rsquo;s entire LLM portfolio — making evaluations repeatable, defensible and ready for ISO 42K-series certification pathways.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-divider"></div>
+
+      <div class="about-section">
+        <p class="about-section-label">05 — Why it matters</p>
+        <p class="about-section-title">Trust as a competitive advantage</p>
+        <p class="about-section-body">Addressing this problem is strategically decisive: compliance is becoming a prerequisite for B2B tenders and public procurement in Europe; unregulated deployment exposes Orange Business and its clients to legal, reputational and operational risk; and trust is the main differentiator against non-European competitors. The expected impact spans three fronts.</p>
+        <div class="about-grid" style="margin-top:.75rem">
+          <div class="about-card">
+            <p class="about-card-title">Revenue growth</p>
+            <p class="about-card-body">Facilitating wins in high-stakes regulated sectors — finance, healthcare and government.</p>
+          </div>
+          <div class="about-card">
+            <p class="about-card-title">Operational efficiency</p>
+            <p class="about-card-body">Standardised AI-lifecycle processes that, per industry benchmarks, cut time-to-market by ~18% and lower the cost of compliance audits.</p>
+          </div>
+          <div class="about-card" style="grid-column:span 2">
+            <p class="about-card-title">Brand reputation</p>
+            <p class="about-card-body">Reinforcing Orange Business&rsquo;s position as a Responsible-AI pioneer — associated with an estimated +29% in brand-reputation value.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-divider"></div>
+
+      <div class="about-section">
+        <p class="about-section-label">06 — The team</p>
+        <p class="about-section-title">Built by the ESSEC &times; Accenture Chair</p>
+        <p class="about-section-body">This work was carried out by four ESSEC students — Raphaelle Choukroun, Gaspard Bidault, Mathurin Moufle and Cyrus Mansour — under the ESSEC &times; Accenture Strategic Business Analytics Chair, in collaboration with Orange Business.</p>
+        <div class="about-pill-row">
+          <span class="about-pill hi">ESSEC Business School</span>
+          <span class="about-pill hi">Accenture</span>
+          <span class="about-pill hi">Orange Business</span>
+        </div>
       </div>`;
 }
 
 function aboutHowHTML(){
   return `
       <div class="about-section">
-        <p class="about-section-label">01 — Project Context</p>
-        <p class="about-section-title">Origin &amp; Objectives</p>
-        <p class="about-section-body">This interface was developed by students of the ESSEC – Accenture Strategic Business Analytics Chair in collaboration with Orange Business. The objective is to provide organizations with a structured, transparent and auditable methodology for evaluating and comparing Large Language Models (LLMs) across dimensions that go beyond raw performance.</p>
-        <div class="about-pill-row">
-          <span class="about-pill hi">ESSEC Business School</span>
-          <span class="about-pill hi">Accenture</span>
-          <span class="about-pill hi">Orange Business</span>
-          <span class="about-pill">ISO/IEC 42001</span>
-          <span class="about-pill">EU AI Act</span>
-        </div>
+        <p class="about-section-label">01 — Purpose</p>
+        <p class="about-section-title">What the interface lets you do</p>
+        <p class="about-section-body">The interface turns a Responsible AI evaluation into a decision tool. An Orange Business client can monitor its use of AI against its own requirements, weight the criteria that matter for a specific context, and see — model by model — where each LLM that Orange can provide is strong, acceptable or disqualifying. Selecting a model stops being a matter of reputation and becomes a documented, reproducible comparison.</p>
       </div>
 
       <div class="about-divider"></div>
 
       <div class="about-section">
-        <p class="about-section-label">02 — Evaluation Framework</p>
-        <p class="about-section-title">Three Evaluation Dimensions</p>
-        <p class="about-section-body">Models are assessed across three complementary dimensions. Each dimension aggregates multiple sub-categories and precise metrics.</p>
+        <p class="about-section-label">02 — Evaluation structure</p>
+        <p class="about-section-title">Three dimensions, broken into categories, measured by metrics</p>
+        <p class="about-section-body">The framework is organised on three levels. At the top, three <strong>dimensions</strong> capture complementary views of a model. Each dimension is split into <strong>categories</strong> — the eight Responsible AI pillars and their sub-categories — and each category is measured by one or more concrete <strong>metrics</strong>, every one scored on the same 0–5 scale. A reader can therefore move from a single headline score down to the exact test behind it.</p>
         <div class="about-grid">
           <div class="about-card">
             <p class="about-card-title" style="color:#FF6600">Responsibility</p>
-            <p class="about-card-body">Bias, fairness, data privacy, transparency, traceability and environmental impact. Grounded in ISO 42001 and EU AI Act requirements.</p>
+            <p class="about-card-body">Bias, fairness, data privacy, transparency &amp; explainability, traceability and environmental impact — anchored in ISO/IEC 42001 and the EU AI Act.</p>
           </div>
           <div class="about-card">
             <p class="about-card-title" style="color:#2C2C2E">Trust</p>
-            <p class="about-card-body">Attack resilience, integrity, confidentiality, reliability, autonomy and sovereignty — drawing from the Digital Trust Radar framework.</p>
+            <p class="about-card-body">Attack resilience, integrity, confidentiality, reliability, autonomy and sovereignty — structured around Orange&rsquo;s Digital Trust Radar.</p>
           </div>
           <div class="about-card" style="grid-column:span 2">
             <p class="about-card-title" style="color:#6E6B66">Performance</p>
-            <p class="about-card-body">Hallucination rate (HHEM) and instruction following reliability (IFR). Focused on operational effectiveness in business contexts.</p>
+            <p class="about-card-body">Hallucination rate (HHEM) and instruction-following reliability (IFR) — the operational effectiveness of the model in real business workflows.</p>
           </div>
         </div>
       </div>
@@ -2019,20 +2089,9 @@ function aboutHowHTML(){
       <div class="about-divider"></div>
 
       <div class="about-section">
-        <p class="about-section-label">03 — RAI Pillars</p>
-        <p class="about-section-title">8 Responsible AI Pillars</p>
-        <p class="about-section-body">The 8 RAI pillars used in this framework were identified through a systematic review of the EU AI Act, ISO/IEC 42001, and leading academic research on Trustworthy AI. They structure the Custom Weighting system.</p>
-        <div class="about-pill-row">
-          ${PILLAR_NAMES.map(p=>'<span class="about-pill">'+p+'</span>').join("")}
-        </div>
-      </div>
-
-      <div class="about-divider"></div>
-
-      <div class="about-section">
-        <p class="about-section-label">04 — Scoring Scale</p>
-        <p class="about-section-title">Evaluation Scale &amp; Color Codes</p>
-        <p class="about-section-body">All evaluation metrics are normalized on a <strong>0 to 5 scale</strong>. Each score is associated with a color code providing an immediate visual reading of the model's performance level.</p>
+        <p class="about-section-label">03 — Scoring scale</p>
+        <p class="about-section-title">A single 0–5 scale with a colour code</p>
+        <p class="about-section-body">Every metric is normalised onto the same <strong>0 to 5 scale</strong>, so heterogeneous tests become directly comparable. Each score carries a colour giving an immediate read of the model&rsquo;s level on that criterion.</p>
         <div style="display:flex;flex-direction:column;gap:.625rem;margin-top:1rem">
           <div style="display:flex;align-items:center;gap:1rem;padding:.875rem 1.125rem;background:#F0FAF4;border:1px solid rgba(39,174,96,.2);border-left:5px solid #27AE60;border-radius:10px">
             <div style="display:flex;align-items:baseline;gap:4px;min-width:80px">
@@ -2068,22 +2127,27 @@ function aboutHowHTML(){
             </div>
           </div>
         </div>
-        <p style="font-size:10px;color:var(--hint);margin-top:.875rem;font-style:italic">Scores reflect the state of models as evaluated at the time of the study. They are subject to revision as models evolve.</p>
+        <p style="font-size:10px;color:var(--hint);margin-top:.875rem;font-style:italic">Scores reflect the state of the models as evaluated at the time of the study and are subject to revision as models evolve.</p>
       </div>
+
       <div class="about-divider"></div>
 
       <div class="about-section">
-        <p class="about-section-label">05 — Scoring Methodology</p>
-        <p class="about-section-title">Score Calculation</p>
-        <p class="about-section-body">Each model receives a score on a 0–5 scale for each dimension and sub-category. The global score is the unweighted average of all three main dimensions. When Custom Weighting is active, the composite score is calculated as a weighted average of the 8 RAI pillar scores, using the following multipliers:</p>
+        <p class="about-section-label">04 — Weighting Studio</p>
+        <p class="about-section-title">Tuning the benchmark to a use case</p>
+        <p class="about-section-body">No two organisations weigh these criteria the same way. The Weighting Studio lets a user raise or lower the importance of each pillar so the composite score reflects their own risk appetite. Each pillar is set to one of three levels, applied as multipliers and then normalised so the global score always stays on the 0–5 scale:</p>
         <div class="about-grid" style="margin-top:.75rem">
           <div class="about-card">
-            <p class="about-card-title" style="color:#FF6600">High Priority &nbsp;3×</p>
-            <p class="about-card-body">Pillars assigned a High Weight contribute three times more to the composite score.</p>
+            <p class="about-card-title" style="color:#FF6600">High &nbsp;3×</p>
+            <p class="about-card-body">The pillar counts three times more in the composite score — for criteria that are decisive in the chosen context.</p>
           </div>
           <div class="about-card">
-            <p class="about-card-title">Medium Priority &nbsp;2×</p>
-            <p class="about-card-body">Default weight for all pillars. Reflects a balanced evaluation across all dimensions.</p>
+            <p class="about-card-title">Medium &nbsp;2×</p>
+            <p class="about-card-body">The default, balanced weight applied to every pillar when no specific priority is expressed.</p>
+          </div>
+          <div class="about-card" style="grid-column:span 2">
+            <p class="about-card-title" style="color:#6E6B66">Low &nbsp;1×</p>
+            <p class="about-card-body">The pillar still contributes but counts less — for criteria that are secondary to the use case at hand.</p>
           </div>
         </div>
       </div>
@@ -2091,22 +2155,34 @@ function aboutHowHTML(){
       <div class="about-divider"></div>
 
       <div class="about-section">
-        <p class="about-section-label">06 — Business Presets</p>
-        <p class="about-section-title">HR &amp; Legal Configurations</p>
-        <p class="about-section-body">Two business presets are available to quickly orient the evaluation toward specific organizational contexts. They reflect the typical priority structures of HR and Legal functions when selecting an AI model.</p>
-        <div class="about-placeholder">Detailed preset logic and rationale — <em>to be documented</em></div>
+        <p class="about-section-label">05 — Example use cases</p>
+        <p class="about-section-title">Two ready-made profiles: HR and Legal</p>
+        <p class="about-section-body">To illustrate the Weighting Studio, two preset profiles ship with the interface. They reflect the typical priorities of an HR and a Legal function, classifying each pillar as High, Medium or Low.</p>
+
+        <div class="about-card" style="margin-top:.75rem">
+          <p class="about-card-title" style="color:#FF6600">HR profile</p>
+          <p class="about-card-body" style="margin-bottom:.45rem"><strong>High (3×):</strong> Fairness &amp; Equity, Transparency &amp; Explainability, Human Control &amp; Oversight &nbsp;·&nbsp; <strong>Medium (2×):</strong> Data Privacy, Autonomy &amp; Sovereignty &nbsp;·&nbsp; <strong>Low (1×):</strong> Bias, Security &amp; Technical Robustness, Environmental Impact</p>
+          <p class="about-card-body">An HR model acts directly on people, so the profile prioritises non-discrimination in outcomes (Fairness &amp; Equity), the ability to explain and contest a decision (Transparency &amp; Explainability) and keeping a human in the loop (Human Control &amp; Oversight). The decision-level fairness metrics already carry the fairness signal, so the Bias pillar — which probes stereotype leakage in free-text generation — and adversarial Security weigh less here; environmental impact is not material to the task.</p>
+        </div>
+
+        <div class="about-card" style="margin-top:.625rem">
+          <p class="about-card-title" style="color:#2C2C2E">Legal profile</p>
+          <p class="about-card-body" style="margin-bottom:.45rem"><strong>High (3×):</strong> Data Privacy, Security &amp; Technical Robustness, Transparency &amp; Explainability &nbsp;·&nbsp; <strong>Medium (2×):</strong> Human Control &amp; Oversight, Autonomy &amp; Sovereignty &nbsp;·&nbsp; <strong>Low (1×):</strong> Bias, Fairness &amp; Equity, Environmental Impact</p>
+          <p class="about-card-body">A legal model handles privileged information and must never fabricate, so the profile prioritises Data Privacy, Security &amp; Technical Robustness — a hallucinated clause or an invented precedent is unacceptable — and Transparency &amp; Explainability, since every output must be justifiable. People-level Bias and Fairness, and environmental impact, bear less on document-centric legal work and are weighted lower.</p>
+        </div>
+
+        <p class="about-section-body" style="margin-top:.875rem"><em>These two profiles are only illustrative starting points. Every weighting is fully adjustable in the Weighting Studio, so a client can build a profile that matches its own use case and risk appetite.</em></p>
       </div>
 
       <div class="about-divider"></div>
 
       <div class="about-section">
-        <p class="about-section-label">07 — Limitations &amp; Next Steps</p>
-        <p class="about-section-title">Current Limitations</p>
-        <p class="about-section-body">The scores presented in this prototype are illustrative and based on a simplified evaluation pipeline. A full automated scoring system leveraging Python notebooks, benchmark datasets and evaluation pipelines is planned as a next step.</p>
-        <div class="about-placeholder">Detailed limitations, future roadmap and governance framework — <em>to be documented</em></div>
+        <p class="about-section-label">06 — Score integration</p>
+        <p class="about-section-title">An auditable, live pipeline</p>
+        <p class="about-section-body">Scores reach the interface through a single, traceable pipeline. Each metric was implemented and run in a dedicated evaluation notebook that produces a raw score per model; for the categories belonging to the Digital Trust Radar, the scores were obtained directly from Orange Business. All raw scores and weightings are then consolidated in a master spreadsheet that is connected live to the application — so any new evaluation, corrected value or re-weighting propagates to the dashboard automatically, with no change to the code. The benchmark therefore stays reproducible, transparent and current as the models and the priorities evolve.</p>
       </div>`;
 }
-
+  
 function aboutMetricsHTML(){
   return `<div class="metrics-wrap">` + METRIC_CATEGORIES.map(c=>`
     <div class="metrics-cat">
