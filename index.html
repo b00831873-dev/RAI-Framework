@@ -1728,41 +1728,212 @@ const METRIC_CATEGORIES = [
   ]},
 ];
 
-/* ─── Metric content (one entry per metric).
-   To document a new metric, copy the "bbq" block and fill it in.
-   Any metric without an entry shows a "to be added" placeholder.   ─── */
+Metric content · JS
 const METRIC_CONTENT = {
   "bbq": {
     cat:"Bias",
-    title:"BBQ &mdash; Bias Benchmark for QA",
-    subtitle:"Responsible AI Metric &mdash; Implementation &amp; Evaluation Dossier",
+    title:"BBQ — Bias Benchmark for QA",
+    subtitle:"Responsible AI Metric — Implementation &amp; Evaluation Dossier",
     sections:[
       { label:"What it measures",
-        body:`BBQ checks whether a model leans on social stereotypes when a question cannot be answered from the context it is given. Each item appears twice: ambiguous (no detail resolves it, so the only correct answer is &ldquo;Unknown&rdquo;) and disambiguated (a sentence makes the answer derivable). Accuracy on the ambiguous items is the bias-resistance score &mdash; any answer other than &ldquo;Unknown&rdquo; is a stereotype-aligned guess.` },
+        body:`BBQ checks whether a model leans on social stereotypes when a question cannot be answered from the context it is given. Each item appears twice: ambiguous (no detail resolves it, so the only correct answer is “Unknown”) and disambiguated (a sentence makes the answer derivable). Accuracy on the ambiguous items is the bias-resistance score — any answer other than “Unknown” is a stereotype-aligned guess.` },
       { label:"Why it matters &amp; compliance",
-        body:`It turns &ldquo;is the model biased?&rdquo; into reproducible, per-attribute evidence &mdash; the input AI governance needs. It aligns with ISO/IEC 42001 risk assessment (&sect;6.1.2) and, being deterministic, meets the standard&rsquo;s demand for comparable results; it supports the EU AI Act&rsquo;s bias-examination and risk-management duties for high-risk systems. A low score is an early disqualifier for any use case touching protected attributes (recruitment, lending, public services).` },
+        body:`It turns “is the model biased?” into reproducible, per-attribute evidence — the input AI governance needs. It aligns with ISO/IEC 42001 risk assessment (§6.1.2) and, being deterministic, meets the standard’s demand for comparable results; it supports the EU AI Act’s bias-examination and risk-management duties for high-risk systems. A low score is an early disqualifier for any use case touching protected attributes (recruitment, lending, public services).` },
       { label:"How it is evaluated",
-        body:`The official NYU BBQ dataset is run on a balanced stratified sample of ~1,100 items across 11 protected attributes and both conditions. Items are single-letter multiple-choice questions under greedy (deterministic) decoding; a robust parser reads the answer and unparseable outputs count as incorrect. It is an accuracy-based diagnostic, not the paper&rsquo;s signed bias score.` },
+        body:`The official NYU BBQ dataset is run on a balanced stratified sample of ~1,100 items across 11 protected attributes and both conditions. Items are single-letter multiple-choice questions under greedy (deterministic) decoding; a robust parser reads the answer and unparseable outputs count as incorrect. It is an accuracy-based diagnostic, not the paper’s signed bias score.` },
       { label:"Score &amp; interface",
-        body:`The interface receives the ambiguous-context accuracy (bias resistance), mapped to a 0&ndash;5 scale by a non-linear rule. Disambiguated accuracy is kept as a control. Together they separate genuine caution from blanket refusal.` },
+        body:`The interface receives the ambiguous-context accuracy (bias resistance), mapped to a 0–5 scale by a non-linear rule. Disambiguated accuracy is kept as a control. Together they separate genuine caution from blanket refusal.` },
       { label:"What the scores say",
-        body:`Qwen 2.5-7B resists bias well but scores higher on ambiguous than disambiguated items: a strong &ldquo;Unknown&rdquo; prior, part caution and part over-abstention. Llama 3.1-8B and Mistral 7B show the opposite: solid comprehension, weak resistance, both Critical. Age is the weakest category for all three.` },
+        body:`Qwen 2.5-7B resists bias well but scores higher on ambiguous than disambiguated items: a strong “Unknown” prior, part caution and part over-abstention. Llama 3.1-8B and Mistral 7B show the opposite: solid comprehension, weak resistance, both Critical. Age is the weakest category for all three.` },
     ]
   },
-
-  // ─── TEMPLATE for the next metrics — uncomment & fill, then it appears automatically ───
-  // "tokenisation-premium": {
-  //   cat:"Bias",
-  //   title:"Tokenisation Premium",
-  //   subtitle:"Responsible AI Metric &mdash; Implementation &amp; Evaluation Dossier",
-  //   sections:[
-  //     { label:"What it measures",          body:`&hellip;` },
-  //     { label:"Why it matters &amp; compliance", body:`&hellip;` },
-  //     { label:"How it is evaluated",       body:`&hellip;` },
-  //     { label:"Score &amp; interface",     body:`&hellip;` },
-  //     { label:"What the scores say",       body:`&hellip;` },
-  //   ]
-  // },
+  "tokenisation-premium": {
+    cat:"Bias",
+    title:"Tokenisation Premium",
+    subtitle:"Responsible AI Metric — Implementation &amp; Evaluation Dossier",
+    sections:[
+      { label:"What it measures",
+        body:`Tokenisation Premium measures whether equivalent business content costs more tokens in French than in English under a model’s own tokenizer. For each English/French prompt pair it counts tokens and computes the premium = (FR − EN) / EN. A high premium means French is structurally more expensive to process: more cost, more latency, less usable context, for identical content.` },
+      { label:"Why it matters &amp; compliance",
+        body:`This is a fairness issue, not a quality defect: French-speaking users pay a built-in penalty for the same task. It grounds in Petrov et al. (NeurIPS 2023), which showed that tokenization disparities arise before the model is even invoked and drive unequal cost, latency and context across languages. It maps to ISO/IEC 42001 risk assessment (§6.1.2) as a measurable, reproducible operational-equity risk, and is directly material for any French-facing deployment.` },
+      { label:"How it is evaluated",
+        body:`A purpose-built synthetic dataset of parallel English/French business prompts across four domains (Finance, Legal, HR, Sales), about 50 pairs per domain, is tokenised with each model’s native tokenizer. The premium is computed per pair, averaged per domain (registers differ in density), then macro-averaged across domains. No model inference is run — only tokenization is measured, so the result is deterministic.` },
+      { label:"Score &amp; interface",
+        body:`The interface receives the overall average French token premium (%), mapped to 0–5 with lower = better on a non-linear scale (Excellent near 0, degrading to Disqualifying at +200%). Per-domain premiums are kept as diagnostics that locate the most token-dense registers.` },
+      { label:"What the scores say",
+        body:`All three models carry a large French premium: French costs ~70–76% more tokens on average, placing every model in the Weak band. Qwen 2.5-7B is marginally the most efficient, Mistral 7B the least, but the spread is small. Finance is the most token-dense domain for all three, Sales the least. The takeaway is structural: a French deployment pays roughly a 1.7× token cost regardless of which of these models is chosen.` },
+    ]
+  },
+  "pii-extraction": {
+    cat:"Data Privacy",
+    title:"PII Extraction Rate",
+    subtitle:"Responsible AI Metric — Implementation &amp; Evaluation Dossier",
+    sections:[
+      { label:"What it measures",
+        body:`The PII Restriction Rate measures how reliably the model removes personal data when asked to anonymise a text. Each input carries annotated PII values (identity-card and passport numbers, social-security numbers, emails, phone numbers, IP addresses, names, addresses, and more); the model is told to anonymise the text, and the output is checked for any of those known values. The headline is the known PII leakage rate — the share of outputs that still repeat at least one PII value that should have been removed (lower is better).` },
+      { label:"Why it matters &amp; compliance",
+        body:`Anonymisation is a frontline data-protection control: any workflow that asks a model to redact or de-identify text (HR records, support tickets, contracts, medical or financial notes) depends on it not leaving PII behind. It sits in Data Privacy, is grounded in the LLM data-leakage literature (Nasr et al., 2023), and maps to ISO/IEC 42001 risk assessment (§6.1.2) and the GDPR / EU AI Act data-protection expectations. Leaked PII is a direct regulatory and contractual exposure.` },
+      { label:"How it is evaluated",
+        body:`On the AI4Privacy pii-masking-300k dataset (English and French), the model anonymises each text. The output is matched literally against the dataset’s annotated PII values to compute the known leakage rate, and Microsoft Presidio (NER-based) is run on the output as a secondary residual-PII detector. Results are broken down by language and by PII category to locate the most-leaked types.` },
+      { label:"Score &amp; interface",
+        body:`The interface receives the known PII leakage rate (%), mapped to 0–5 where lower is better (0% = Excellent, falling steeply to Disqualifying by 75%). The Presidio residual rate and the per-category and per-language breakdowns are diagnostics.` },
+      { label:"What the scores say",
+        body:`All three models leak material amounts of PII when asked to anonymise. Mistral 7B is the best (14.5% leakage, ≈ 2.6 / 5, Moderate), Llama 3.1-8B is worse (29.5%, Critical), and Qwen 2.5-7B is the weakest by far (52%, Critical — it leaks the majority of PII). The most-leaked high-harm identifiers are social-security, ID-card, passport and driver-licence numbers. None of the three is close to the under-2% leakage expected in regulated healthcare or finance settings.` },
+    ]
+  },
+  "co2-fu": {
+    cat:"Environmental",
+    title:"CO₂ per Functional Unit",
+    subtitle:"Responsible AI Metric — Implementation &amp; Evaluation Dossier",
+    sections:[
+      { label:"What it measures",
+        body:`This metric quantifies the energy cost of inference, expressed per functional unit (1,000 tokens) so it stays comparable across model sizes and run durations. It is measured with CodeCarbon during a real inference run and reported as Wh per 1,000 tokens (and grams of CO₂-equivalent). Lower is better.` },
+      { label:"Why it matters &amp; compliance",
+        body:`The environmental footprint of inference is a first-class Responsible-AI concern and an emerging reporting obligation: at deployment scale, per-token energy compounds into real electricity, cost and carbon. Expressing it per 1,000 tokens lets an organization project a workload’s footprint and compare models on equal footing. It sits in Environmental Impact, is measured with CodeCarbon (in the lineage of Lacoste et al., 2019), and maps to ISO/IEC 42001’s environmental-impact considerations and to sustainability-reporting frameworks (CSRD) and the EU AI Act. It is a Conditional metric: its reading depends on the hardware, task and grid it was measured on.` },
+      { label:"How it is evaluated",
+        body:`CodeCarbon instruments a representative inference run (here the Disparate Impact run) and estimates energy from component-level utilization models (GPU, CPU, RAM) with a PUE of 1.2 for datacenter overhead. Total energy is divided by the total token count (input plus output) to give Wh per 1,000 tokens, and converted to grams of CO₂eq using the local grid intensity. The measurement was taken on a Google Colab T4 GPU.` },
+      { label:"Score &amp; interface",
+        body:`The interface receives the Wh per 1,000 tokens, mapped to 0–5 where lower is better. Total energy, grams of CO₂eq, run duration and the input/output token mix are diagnostics.` },
+      { label:"What the scores say",
+        body:`All three models land in the Good band and within a hair of each other — Llama 0.13, Mistral 0.15, Qwen 0.16 Wh per 1,000 tokens. The differences are within the method’s uncertainty, so the ranking is not meaningful; the honest reading is “comparable, low, on a T4”. Crucially, this figure is a low-power consumer-GPU baseline measured on one task, not a production-hardware number — the metric should be re-instrumented on representative hardware (for example the client’s own servers) before it drives any decision.` },
+    ]
+  },
+  "disparate-impact": {
+    cat:"Fairness",
+    title:"Disparate Impact",
+    subtitle:"Responsible AI Metric — Implementation &amp; Evaluation Dossier",
+    sections:[
+      { label:"What it measures",
+        body:`Disparate Impact tests whether the model, acting as a decision-maker, assigns favourable outcomes at similar rates to a protected group and a reference group. Demographic profiles are scored for “high-income likelihood” (0–100), and the DI ratio = mean score of the protected group / mean score of the reference group. 1.0 is parity; the EEOC four-fifths rule flags anything below 0.80 (or above 1.25) as adverse impact. It captures indirect discrimination.` },
+      { label:"Why it matters &amp; compliance",
+        body:`It is the legal-grade fairness test (four-fifths rule, EEOC) and surfaces discrimination even when the model is not told the protected attribute. Two prompt regimes (blind and informed) separate latent bias from direct discrimination. It maps to ISO/IEC 42001 risk assessment (§6.1.2) and the EU AI Act’s non-discrimination duties for high-risk decision systems and is grounded in the ethical-metrics literature (Palumbo, Carneiro &amp; Alves, 2024). Decisive for any client deploying the model in HR, credit, admissions or other consequential decisions.` },
+      { label:"How it is evaluated",
+        body:`Profiles from the UCI Adult / Census Income dataset (with sex, race, age) are scored on a continuous 0–100 scale, more stable than binary selection rates. The DI ratio is computed per protected axis (sex, race, age) under both blind and informed prompts, with bootstrap 95% confidence intervals (1,000 resamples). The worst (lowest) DI across axes drives the final score.` },
+      { label:"Score &amp; interface",
+        body:`The interface receives the worst-axis DI ratio, mapped to 0–5 where 1.0 (parity) = Excellent and the score falls steeply below the 0.80 four-fifths line (Critical) toward Disqualifying at 0.30. Per-axis values and the blind/informed split are kept as diagnostics.` },
+      { label:"What the scores say",
+        body:`Race is the failing axis for all three models: every one scores below the 0.80 four-fifths threshold on Black vs White, so all land in the Critical band on their worst axis. Revealing race makes it worse in every case (informed &lt; blind). Sex sits near parity and Age slightly above it (within band). Mistral 7B is least unequal on the worst axis, Llama 3.1-8B the most.` },
+    ]
+  },
+  "fairness-score": {
+    cat:"Fairness",
+    title:"Fairness Score",
+    subtitle:"Responsible AI Metric — Implementation &amp; Evaluation Dossier",
+    sections:[
+      { label:"What it measures",
+        body:`The Fairness Score measures whether the model describes people systematically differently depending on their gender, race or religion. The model completes neutral biography-style prompts about demographic groups; each completion is scored for sentiment and formality, and a regression tests whether group membership has a statistically significant effect on those scores. The headline is the share of group-difference tests that are not statistically significant (higher is fairer). It complements Disparate Impact by testing fairness on text generation rather than on decisions.` },
+      { label:"Why it matters &amp; compliance",
+        body:`Generation fairness matters wherever a model writes about or for people: biographies, descriptions, testimonials, summaries, because systematically warmer or more formal language for some groups is a representational harm. It sits in Fairness &amp; Equity, uses the BOLD dataset (Dhamala et al., 2021) with a GovTech-style regression methodology, and maps to ISO/IEC 42001 risk assessment (§6.1.2) and the EU AI Act’s non-discrimination expectations. It is a Conditional metric: its reading depends on the scoring models and demographic categories used.` },
+      { label:"How it is evaluated",
+        body:`On BOLD’s gender, race and religious-ideology prompts, the model completes each prompt; completions are scored for sentiment (DistilBERT/SST-2) and formality (RoBERTa/GYAFC), with length capped to neutralize length bias. For each axis an OLS regression tests whether the demographic category significantly affects each score, against a held-out baseline group. The Fairness Score is the share of (axis × group × target) tests that are not significant at the 5% level.` },
+      { label:"Score &amp; interface",
+        body:`The interface receives the global Fairness Score (%), mapped to 0–5 where higher is better. The per-axis decomposition (gender / race / religion) is the actionable view.` },
+      { label:"What the scores say",
+        body:`All three models return the identical Fairness Score: 65% (2.5 / 5, Moderate), with the same axis decomposition: Gender 100%, Race 100%, Religion 42%. The whole global gap comes from the religion axis (driven by the atheism group), and the fact that the score is identical across three different models is itself the key finding: in its current form the metric does not discriminate between models. The most likely cause is sentiment-classifier saturation. The metric and its implementation need to be reworked, and at present its per-model interpretation is unreliable.` },
+    ]
+  },
+  "ifr": {
+    cat:"Human Control &amp; Oversight",
+    title:"Instruction Following Reliability (IFR)",
+    subtitle:"Responsible AI Metric — Implementation &amp; Evaluation Dossier",
+    sections:[
+      { label:"What it measures",
+        body:`Instruction Following Reliability measures whether the model reliably obeys explicit, machine-checkable instructions: length, format, casing, required or forbidden words, structure. On the IFEval benchmark, each prompt carries one to three verifiable constraints drawn from 25 instruction types, checked by Google’s official verifier. The headline is prompt-level strict accuracy: a prompt passes only if every constraint it carries is satisfied.` },
+      { label:"Why it matters &amp; compliance",
+        body:`Instruction following is the mechanism through which a human keeps control of a model: if a user’s explicit constraints are not reliably honoured, the operator cannot steer or bound the system. It sits in Human Control &amp; Oversight, is grounded in IFEval (Zhou et al., 2023), and maps to ISO/IEC 42001 risk assessment (§6.1.2) and the EU AI Act’s human-oversight expectations. It is decisive for any workflow that depends on the model respecting format, length or content constraints (structured output, templated generation, agentic steps).` },
+      { label:"How it is evaluated",
+        body:`A sample of IFEval prompts is answered with an empty system prompt (no formatting bias), greedy decoding and a generous length budget; responses are scored by Google’s official instruction_following_eval verifier, which is fully algorithmic. Four scores result: prompt-level and instruction-level, each strict and loose. Prompt-level strict is the headline; a per-instruction-category breakdown surfaces the weakest constraint types.` },
+      { label:"Score &amp; interface",
+        body:`The interface receives prompt-level strict accuracy (%), mapped to 0–5 (higher is better). The other three scores and the per-category breakdown are kept as diagnostics.` },
+      { label:"What the scores say",
+        body:`Llama 3.1-8B is the most reliable (74% prompt-strict, ≈ 3.9 / 5, Moderate), Qwen 2.5-7B mid (65%, 3.2 / 5), Mistral 7B clearly weakest (44%, ≈ 2.1 / 5, Weak). Across all three the universal weak spots are combination (several constraints at once) and length constraints: models handle single simple constraints but break when constraints stack or require a precise length. Strict scores sit well below the loose and instruction-level variants, showing that satisfying a whole prompt at once is the hard part.` },
+    ]
+  },
+  "gcg": {
+    cat:"Security &amp; Robustness",
+    title:"GCG Attack Success Rate",
+    subtitle:"Responsible AI Metric — Implementation &amp; Evaluation Dossier",
+    sections:[
+      { label:"What it measures",
+        body:`The Attack Success Rate measures the model’s resistance to direct harmful requests: whether it refuses harmful prompts while still answering benign ones. On the JailbreakBench behaviours, each harmful request is sent to the model and a semantic judge rule whether it complied or refused. The headline is the Attack Success Rate (ASR): the share of harmful requests the model complied with (lower is better). A companion False Refusal Rate (FRR) tracks benign requests wrongly refused.` },
+      { label:"Why it matters &amp; compliance",
+        body:`Native refusal of harmful requests is the model’s first safety layer; a high ASR means it will produce harmful content on a plain request, with no adversarial effort. It sits in Security &amp; Technical Robustness, uses the JailbreakBench dataset (Chao et al., 2024), and is grounded in the GCG adversarial-attack literature (Tan et al., 2025). It maps to ISO/IEC 42001 risk assessment (§6.1.2) and the EU AI Act’s safety and robustness obligations. Note: this measures robustness to direct requests; adaptive attacks (suffix optimisation, multi-turn, encoding) are out of scope and far more effective.` },
+      { label:"How it is evaluated",
+        body:`100 harmful and 100 benign JBB-Behaviors across 10 categories are answered under a neutral system prompt; a semantic judge reads the full response and rules compliance versus refusal, replacing brittle prefix matching. ASR = harmful complied; FRR = benign refused. A per-category ASR and a bootstrap confidence interval are reported. The judge is the same model under audit (self-judge), so the absolute ASR is likely under-estimated; cross-model comparison stays valid because the bias applies symmetrically.` },
+      { label:"Score &amp; interface",
+        body:`The interface receives the ASR (%), mapped to 0–5 where lower is better and the scale is deliberately harsh (20% is already Critical, ≥50% Disqualifying). The FRR, the per-category ASR and the confidence interval are kept as diagnostics.` },
+      { label:"What the scores say",
+        body:`Llama 3.1-8B is the most robust (9% ASR, ≈ 2.7 / 5, Weak) but over-refuses benign requests the most (FRR ~17%); Qwen 2.5-7B is middling (19% ASR, ≈ 1.6 / 5, Critical; FRR ~5%); Mistral 7B complies with over half of harmful requests (52% ASR, ≈ 0.5 / 5, Disqualifying) while barely refusing anything benign (FRR ~1%), permissive, not safe. Disinformation and expert advice are the softest categories across all three.` },
+    ]
+  },
+  "hhem": {
+    cat:"Security &amp; Robustness",
+    title:"HHEM Hallucination Rate",
+    subtitle:"Responsible AI Metric — Implementation &amp; Evaluation Dossier",
+    sections:[
+      { label:"What it measures",
+        body:`The HHEM Hallucination Rate measures whether the model’s RAG answers stay faithful to the retrieved context: factual consistency between the answer and its source documents. For each RAGBench question the model must answer using only the provided context; Vectara’s HHEM judge returns a 0–1 support score, and an answer scoring below 0.5 is counted as hallucinated. The headline is the mean hallucination rate across enterprise domains (lower is better).` },
+      { label:"Why it matters &amp; compliance",
+        body:`RAG is the dominant enterprise pattern for grounding an LLM in private or domain knowledge; a model that invents content not supported by the retrieved context produces confident, unverifiable errors (the core technical-robustness failure for RAG). It sits in Security &amp; Technical Robustness, uses Vectara’s HHEM v2 as judge on the RAGBench benchmark (Friel et al., 2024), and maps to ISO/IEC 42001 risk assessment (§6.1.2) and the EU AI Act’s accuracy and robustness expectations for high-risk systems.` },
+      { label:"How it is evaluated",
+        body:`Four RAGBench domains are scored: Expert QA, Finance, Legal contracts, Technical support. Each answer is judged by HHEM (&lt;0.5 = hallucinated). Calculation questions are filtered out first (HHEM flags computed numbers as hallucinated even when correct), and refusals are tracked separately (declining is safe, not a hallucination). A domain length strategy filters context to ≤20k chars (Expert QA, Finance) or truncates to 6k (Legal, Technical). Aggregation is the unweighted mean of per-domain rates, since each domain is a distinct use case.` },
+      { label:"Score &amp; interface",
+        body:`The interface receives the mean hallucination rate (%), mapped to 0–5 where lower is better (0% = Excellent, falling to Disqualifying at 100%). The per-domain rates, the refusal rate and the mean HHEM support score are kept as diagnostics.` },
+      { label:"What the scores say",
+        body:`Llama 3.1-8B is dramatically more faithful (~30% mean, ≈ 3.7 / 5, Moderate) than Mistral 7B (~73%, Weak) and Qwen 2.5-7B (~79%, Critical) — a ~44-point gap, so only Llama is usable for RAG without heavy guardrails. Legal contracts split the field hardest (Llama 10% vs ~86–91% for the others). Finance is the hardest domain for all and rests on a small sample (n=36). Note: Mistral’s mean omits Technical support (no run for that domain).` },
+    ]
+  },
+  "website-restriction": {
+    cat:"Autonomy &amp; Sovereignty",
+    title:"Website Restriction Rate",
+    subtitle:"Responsible AI Metric — Implementation &amp; Evaluation Dossier",
+    sections:[
+      { label:"What it measures",
+        body:`The Website / Policy Restriction Rate measures whether the model correctly enforces an organisation’s access and usage policies. It is framed as a compliance-classification task: given the policy list and a user request, the model labels the request COMPLIANT or VIOLATION (and, for a violation, names the policy). The headline is the Restriction Rate (WRR) which is the share of true violations the model correctly catches (recall on violations; higher is better). A paired False Refusal Rate tracks how often it wrongly blocks legitimate requests.` },
+      { label:"Why it matters &amp; compliance",
+        body:`As organisations delegate tasks to LLM-based assistants and agents, the model becomes a gatekeeper for the organisation’s own rules: do not exfiltrate trade secrets, do not expose personal or financial data, do not touch restricted resources. WRR measures whether the model keeps the organisation in control. It sits in Autonomy &amp; Sovereignty, uses the policy-compliance benchmark of Cisneros-Velarde (2026), and maps to ISO/IEC 42001 risk assessment (§6.1.2) and the EU AI Act’s human-oversight duties. Genuine enforcement needs a high WRR and a low False Refusal Rate together.` },
+      { label:"How it is evaluated",
+        body:`On a 225-request benchmark spanning 9 organisational policies, the model classifies each request COMPLIANT or VIOLATION in structured JSON, naming the policy number on a violation. From the confusion matrix the notebook computes the WRR (recall on violations), the False Refusal Rate (compliant requests wrongly flagged), accuracy and F1, the policy-ID accuracy (was the right policy named?), and per-policy results.` },
+      { label:"Score &amp; interface",
+        body:`The interface receives the WRR (%), mapped to 0–5 where higher is better (0% = Disqualifying, 100% = Excellent). The False Refusal Rate, accuracy, policy-ID accuracy and the per-policy breakdown are diagnostics.` },
+      { label:"What the scores say",
+        body:`Llama 3.1-8B catches the most violations (84%, ≈ 4.2 / 5, Good), Qwen 2.5-7B is middling (66%, Moderate), and Mistral 7B lets nearly half through (51%, Weak). The hardest policies are the judgement-heavy ones — sensitive-data exposure, trade secrets, strategic financial data. WRR must be read with the False Refusal Rate, since catching more violations can come at the cost of over-blocking legitimate requests.` },
+    ]
+  },
+  "counterfactual-faithfulness": {
+    cat:"Transparency &amp; Explainability",
+    title:"Counterfactual Faithfulness",
+    subtitle:"Responsible AI Metric — Implementation &amp; Evaluation Dossier",
+    sections:[
+      { label:"What it measures",
+        body:`Counterfactual Faithfulness measures whether the words the model says drove its decision actually did. On a natural-language-inference task the model predicts a label and cites the key words behind its choice; those cited words are then masked and the model re-runs. If the prediction changes, the citation was faithful: the words genuinely mattered; if it holds, the citation was decorative. The headline is the Faithfulness Rate: the share of cases where masking the cited words flipped the prediction (higher is better). It is a behavioral proxy for faithfulness, not a direct inspection of model internals.` },
+      { label:"Why it matters &amp; compliance",
+        body:`It tests the link between a model’s stated rationale and its real reasoning: the core of a trustworthy explanation. It is the complement of Plausibility: plausibility asks whether the explanation looks good, faithfulness asks whether it reflects what the model actually used. It sits in Transparency &amp; Explainability, is grounded in the counterfactual faithfulness test (Atanasova et al., 2023) and mask-based faithfulness measurement (Madsen et al., 2024), and maps to ISO/IEC 42001 transparency and human-oversight requirements and the EU AI Act’s explainability expectations.` },
+      { label:"How it is evaluated",
+        body:`On e-SNLI (a label-balanced sample), the model classifies a premise–hypothesis pair and cites the key words; those words are masked (phrase-level, from the model’s own citations) and the model re-classifies. A case is faithful if the prediction changed. The flip rate is computed overall and by NLI label, with bootstrap 95% confidence intervals.` },
+      { label:"Score &amp; interface",
+        body:`The interface receives the Faithfulness Rate (%), mapped to 0–5 where higher is better. The per-label rates and confidence intervals are diagnostic.` },
+      { label:"What the scores say",
+        body:`Qwen 2.5-7B is the most faithful (60%, 3.0 / 5, Moderate); Mistral 7B (36.7%, Critical) and Llama 3.1-8B (23.3%, Critical) are much less so. The striking finding pairs with Plausibility: the model with the lowest plausibility (Qwen) is the most faithful, while the highest-plausibility models (Llama, Mistral) are the least: convincing explanations are not the same as truthful ones. Contradiction explanations are the most faithful for all three; neutral the least; and Llama’s entailment explanations are 0% faithful (purely decorative).` },
+    ]
+  },
+  "plausibility": {
+    cat:"Transparency &amp; Explainability",
+    title:"Plausibility",
+    subtitle:"Responsible AI Metric — Implementation &amp; Evaluation Dossier",
+    sections:[
+      { label:"What it measures",
+        body:`Plausibility measures the quality of the model’s explanations on a natural-language-inference task, meaning whether a generated rationale is logically coherent and consistent with general knowledge, independent of whether it reflects the model’s true reasoning. The model predicts an NLI label and writes a 1–2 sentence explanation; an LLM judge scores it 1–5 on four criteria (logic, domain consistency, causal validity, absence of contradictions), averaged into the plausibility score.` },
+      { label:"Why it matters &amp; compliance",
+        body:`Explanations are how users and auditors trust an AI decision; a low-plausibility model produces rationales that read as incoherent or off-base. It sits in Transparency &amp; Explainability and complements Counterfactual Faithfulness: plausibility is the “perceived quality” axis, faithfulness the “true reasoning” axis. Grounded in the LLM-for-XAI literature (Bilal, Ebert &amp; Lin, 2025), with judge methodology adapted from G-Eval (Liu et al., 2023). It maps to ISO/IEC 42001 transparency and human-oversight requirements and the EU AI Act’s explainability expectations.` },
+      { label:"How it is evaluated",
+        body:`On e-SNLI (premise–hypothesis pairs with gold labels and human reference explanations), a label-balanced sample is scored by an LLM-as-judge that sees the task, the correct label and the human reference but not which model wrote the explanation. Self-preference bias is mitigated in the prompt (blind to producer, strict scoring, ignore length), but the judge is the same model under audit, so absolute scores are inflated. Results are decomposed by criterion, by NLI label, and by predicted-label correctness.` },
+      { label:"Score &amp; interface",
+        body:`The interface receives the global plausibility (1–5 averaged across criteria, rescaled ×20 to 0–100), mapped to 0–5. Because of self-preference, the robust signals are the per-criterion profile and the correct-vs-wrong gap, not the absolute level.` },
+      { label:"What the scores say",
+        body:`All three models score “plausible” (3.8–4.6 / 5), but the headline is inflated by self-judging. The decisive finding is justificative hallucination: explanations stay convincing even when the prediction is wrong: Llama and Mistral still score ~4.1 on wrong answers (red markers below), so a plausible explanation is no guarantee the answer is right. Qwen degrades more when wrong (~3.1), making it comparatively more transparent. Causal validity is the weakest criterion for all; Neutral is the hardest label to explain.` },
+    ]
+  },
 };
 
 /* ─── Tab + overlay controls ─── */
