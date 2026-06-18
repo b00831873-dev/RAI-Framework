@@ -623,10 +623,21 @@ footer{max-width:1060px;margin:.375rem auto 0;padding:.5rem 1.5rem;border-top:1p
   .about-grid{grid-template-columns:1fr}
 
   /* Liste de ranking : resserrée */
-  .rank-row{padding:1rem 1.125rem;gap:1rem;grid-template-columns:44px 1fr auto auto}
-  .rank-num{font-size:20px}
+/* Liste de ranking : logo + nom + score en haut, bouton (taille normale) dessous */
+  .rank-row{
+    padding:1rem 1.125rem;
+    grid-template-columns:44px 1fr auto;
+    grid-template-areas:
+      "logo model score"
+      "btn  btn   btn";
+    row-gap:.75rem;column-gap:1rem;align-items:center
+  }
+  .rank-logo-cell{grid-area:logo}
+  .rank-model{grid-area:model}
+  .rank-score-right{grid-area:score}
+  .rank-actions{grid-area:btn;justify-self:start}
+  .rank-view-btn{width:auto}
   .rank-model-name{font-size:16px}
-  .clean-score-n{font-size:46px}
 
   /* Tableau de comparaison : swipe horizontal */
   .comparison-table{overflow-x:auto;-webkit-overflow-scrolling:touch}
@@ -654,11 +665,6 @@ footer{max-width:1060px;margin:.375rem auto 0;padding:.5rem 1.5rem;border-top:1p
   .filter-group{flex:1 1 100%;flex-wrap:wrap;align-items:center;gap:.4rem .6rem}
   .filter-pills{flex-wrap:wrap}
   .filter-divider{display:none}
-
-  /* Lignes de ranking : le bouton passe sous le reste */
-  .rank-row{grid-template-columns:44px 1fr auto;row-gap:.75rem}
-  .rank-score-wrap{justify-self:end}
-  .card-view-btn,.rank-row .clean-view-btn{grid-column:1/-1;width:100%}
 }
 
 @media (max-width:480px){
