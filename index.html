@@ -649,8 +649,11 @@ footer{max-width:1060px;margin:.375rem auto 0;padding:.5rem 1.5rem;border-top:1p
   footer{flex-direction:column;gap:.25rem;padding:.5rem 1rem}
 
   /* Barre de filtres : scroll horizontal propre au lieu de déborder */
-  .filter-bar{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .filter-group{flex-shrink:0}
+/* Barre de filtres : tout visible, groupes empilés */
+  .filter-bar{flex-wrap:wrap;overflow-x:visible;gap:.875rem 1rem}
+  .filter-group{flex:1 1 100%;flex-wrap:wrap;align-items:center;gap:.4rem .6rem}
+  .filter-pills{flex-wrap:wrap}
+  .filter-divider{display:none}
 
   /* Lignes de ranking : le bouton passe sous le reste */
   .rank-row{grid-template-columns:44px 1fr auto;row-gap:.75rem}
