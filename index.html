@@ -590,6 +590,78 @@ footer{max-width:1060px;margin:.375rem auto 0;padding:.5rem 1.5rem;border-top:1p
 <div id="app"></div>
 <footer id="footer"><span class="ft">LLM Benchmark & Evaluation Interface &middot; Orange Business</span><span class="ft">3 models &middot; 3 categories &middot; 8 RAI dimensions &middot; ISO 42001 &middot; EU AI Act</span></footer>
 
+/* ════════════════════════════════════════════════════════════════
+   MOBILE / TABLET — ajouté en dernier. Rien ne s'applique au-dessus
+   de 768px : le desktop reste strictement identique.
+   ════════════════════════════════════════════════════════════════ */
+@media (max-width:768px){
+  body{overflow-x:hidden}
+
+  /* Header : retour à la ligne + logos réduits */
+  .header{flex-wrap:wrap;gap:.5rem .75rem;padding:.5rem 1rem}
+  .hd-left{gap:.5rem;flex-wrap:wrap}
+  .hd-right{gap:.75rem;flex-wrap:wrap}
+  .hd-ob-logo{height:38px}
+  .essec-logo{height:40px}
+  .partner-logo{height:24px}
+  .hd-sep,.partner-sep{display:none}
+  .hd-title .headline{font-size:12px}
+
+  /* Paddings horizontaux des sections */
+  .hero,.info-band{padding-left:1rem;padding-right:1rem}
+  .home-main,.detail-main{padding-left:1rem!important;padding-right:1rem!important}
+  .about-main{padding:2rem 1rem 3rem}
+  .filter-bar{margin:0 1rem 1rem;gap:.75rem 1rem;padding:.75rem 1rem}
+
+  /* Hero : empilé */
+  .hero{flex-direction:column;align-items:flex-start;gap:.5rem}
+  .hero-text .sub{max-width:none}
+
+  /* Info band : empilée */
+  .info-band{flex-direction:column;gap:1rem}
+  .info-band-text{max-width:none}
+
+  /* Grids multi-colonnes → une colonne */
+  .ranking-grid{grid-template-columns:1fr!important}
+  .cats{grid-template-columns:1fr!important}
+  .about-grid{grid-template-columns:1fr}
+
+  /* Liste de ranking : resserrée */
+  .rank-row{padding:1rem 1.125rem;gap:1rem;grid-template-columns:44px 1fr auto auto}
+  .rank-num{font-size:20px}
+  .rank-model-name{font-size:16px}
+  .clean-score-n{font-size:46px}
+
+  /* Tableau de comparaison : swipe horizontal */
+  .comparison-table{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .comp-header,.comp-row{min-width:560px}
+
+  /* Radar + studio de pondération : empilés, hauteur figée libérée */
+  .dims-row{grid-template-columns:1fr!important;height:auto!important;max-height:none!important;gap:.75rem!important}
+  .dims-card{height:auto!important}
+  .dims-card:first-child{min-height:300px!important}
+
+  /* Modal de pondération : structure interne empilée */
+  .cw-modal{width:95vw;max-height:92vh}
+  .cw-modal-body{flex-direction:column;overflow-y:auto}
+  .cw-presets{width:auto;flex-direction:row;flex-wrap:wrap;border-right:none;border-bottom:1px solid var(--border)}
+  .cw-cols-area{grid-template-columns:1fr}
+  .cw-modal-ft{flex-direction:column;align-items:flex-start;gap:.75rem}
+  .cw-preview{flex-wrap:wrap;gap:.5rem 1rem}
+
+  /* Footer : empilé */
+  footer{flex-direction:column;gap:.25rem;padding:.5rem 1rem}
+}
+
+@media (max-width:480px){
+  .hd-ob-logo{height:32px}
+  .essec-logo{height:34px}
+  .partner-logo{height:20px}
+  .hd-right{gap:.5rem}
+  .clean-score-n{font-size:40px}
+  .rank-model-name{font-size:15px}
+}  
+ 
 <script>
 /* ═══════════════════════════════════════════════
    LOGOS
